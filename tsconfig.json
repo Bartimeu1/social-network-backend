@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "Node",
+    "strict": true,
     "esModuleInterop": true,
-    "outDir": "dist",
+    "outDir": "./dist",
     "removeComments": true,
     "importHelpers": true,
     "sourceMap": true,
