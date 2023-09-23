@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 app.use(compression());
-app.use(router);
+app.use('/user', router);
 
 (async function () {
   try {
