@@ -18,7 +18,7 @@ export class HttpError extends Error {
     return new HttpError(401, 'User is not authorized');
   }
 
-  static BadRequest(message: string, errors: ValidationError[]) {
+  static BadRequest(message: string, errors: ValidationError[] = []) {
     return new HttpError(400, message, errors);
   }
 
