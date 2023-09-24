@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/userModel';
-import { IUser } from 'src/types/baseTypes';
+import { IUser } from '../types/baseTypes';
+import { HttpError } from '../exceptions/httpError';
 import tokenService from './tokenService';
 import UserDto from '../dtos/userDto';
 
@@ -10,7 +11,7 @@ class UserService {
 
     const userExist = await User.findOne({ email });
     if (userExist) {
-      throw new Error(`User with email ${email} already exists`);
+      throw HttpError.UserExists(`User with email ${email} already exists`);
     }
 
     const hashedPassword = await bcrypt.hash(password, 3);
