@@ -9,6 +9,10 @@ interface ITokenPayload {
   firstName: String;
 }
 
+interface IVerifyJwtPayload {
+  id: string;
+}
+
 class TokenService {
   generateTokens(payload: ITokenPayload) {
     const accessToken = jwt.sign(payload, options.jwtAccessKey, {
@@ -21,7 +25,6 @@ class TokenService {
   }
 
   async saveToken(userId: Types.ObjectId, refreshToken: string) {
-    console.log(userId)
     const tokenData = await Token.findOne({ user: userId });
 
     if (tokenData) {
@@ -31,6 +34,36 @@ class TokenService {
     const newToken = await Token.create({ user: userId, refreshToken });
 
     return newToken;
+  }
+
+  async removeToken(refreshToken: string) {
+    await Token.deleteOne({ refreshToken });
+  }
+
+  async findToken(refreshToken: string) {
+    const tokenData = await Token.findOne({ refreshToken });
+
+    return tokenData;
+  }
+
+  validateAccessToken(accessToken: string) {
+    try {
+      const userData = jwt.verify(accessToken, options.jwtAccessKey) as IVerifyJwtPayload;
+
+      return userData;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  validateRefreshToken(refreshToken: string) {
+    try {
+      const userData = jwt.verify(refreshToken, options.jwtRefreshKey) as IVerifyJwtPayload;
+
+      return userData;
+    } catch (err) {
+      return null;
+    }
   }
 }
 

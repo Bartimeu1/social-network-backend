@@ -37,6 +37,33 @@ class UserController {
       next(err);
     }
   }
+  async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { refreshToken } = req.cookies;
+      await UserService.logout(refreshToken);
+
+      res.clearCookie('refreshToken');
+      return res.status(200).json('OK');
+    } catch (err) {
+      next(err);
+    }
+  }
+  async refresh(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { refreshToken } = req.cookies;
+      const userData = await UserService.refresh(refreshToken);
+      
+      if (userData) {
+        res.cookie('refreshToken', userData.refreshToken, {
+          maxAge: msecInDay * 30,
+          httpOnly: true,
+        });
+        res.status(200).json(userData);
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default new UserController();

@@ -26,6 +26,7 @@ class UserService {
       user: userDto,
     };
   }
+
   async login(email: string, password: string) {
     const user = await User.findOne({ email });
     if (!user) {
@@ -45,6 +46,34 @@ class UserService {
       ...tokens,
       user: userDto,
     };
+  }
+
+  async logout(refreshToken: string) {
+    await tokenService.removeToken(refreshToken);
+  }
+
+  async refresh(refreshToken: string) {
+    if (!refreshToken) {
+      throw HttpError.Unauthorized();
+    }
+    
+    const userData = tokenService.validateRefreshToken(refreshToken);
+    const tokenFromDb = await tokenService.findToken(refreshToken);
+    if (!userData || !tokenFromDb) {
+      throw HttpError.Unauthorized();
+    }
+    
+    const user = await User.findById(userData.id);
+    if (user) {
+      const userDto = new UserDto(user);
+      const tokens = tokenService.generateTokens({ ...userDto });
+      await tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+      return {
+        ...tokens,
+        user: userDto,
+      };
+    }
   }
 }
 
